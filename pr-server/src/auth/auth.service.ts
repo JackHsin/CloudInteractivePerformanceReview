@@ -35,7 +35,7 @@ export class AuthService implements OnModuleInit {
       role: account.role,
     };
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 }

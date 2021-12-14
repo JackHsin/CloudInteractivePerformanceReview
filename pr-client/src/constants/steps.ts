@@ -1,0 +1,3 @@
+export const STEP_PAYMENT = "STEP_PAYMENT";
+export const STEP_CONFIRM = "STEP_CONFIRM";
+export const STEP_COMPLETE = "STEP_COMPLETE";

@@ -36,6 +36,10 @@ const {
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+      cors: {
+        origin: 'http://localhost:3001',
+        credentials: true,
+      },
     }),
     AuthModule,
   ],
