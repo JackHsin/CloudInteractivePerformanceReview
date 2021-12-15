@@ -30,11 +30,11 @@ export class AccountResolver {
     return await this.accountService.findAll();
   }
 
-  @Roles(RoleTypeEnum.EMPLOYEE)
+  @Roles(RoleTypeEnum.ADMIN, RoleTypeEnum.EMPLOYEE)
   @Query(() => Account, { name: 'findOne' })
   async findOne(@CurrentUser() user: CurrentUserDTO) {
     console.log('\x1b[32m', '\n--------------Debug----------------\n');
-    console.log('\x1b[36m', `user = `, user);
+    console.log('\x1b[36m', `findOne user = `, user.sub);
     console.log('\x1b[32m', '\n-----------------------------------', '\x1b[0m');
 
     return await this.accountService.findOneById(user.sub);

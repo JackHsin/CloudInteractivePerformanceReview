@@ -8,6 +8,8 @@ import { FeedbackService } from './services/feedback.service';
 import { Review } from './entities/review.entity.gql';
 import { SubmitFeedbackInput } from './dto/submit-feedback.input';
 import { GqlJwtAuthGuard } from 'src/auth/jwt/graphql-jwt-auth.guard';
+import { CurrentUser } from 'src/common/decorators/graphql-current-user.decorator';
+import { CurrentUserDTO } from 'src/common/dto/current-user-decorator.dto';
 
 @UseGuards(RolesGuard)
 @Roles(RoleTypeEnum.ADMIN, RoleTypeEnum.EMPLOYEE)
@@ -23,13 +25,11 @@ export class FeedbackResolver {
     return await this.feedbackService.submitFeedback(submitFeedbackInput);
   }
 
-  @Query(() => [Review], { name: 'findAllReviewsByAccountId' })
-  async findAllReviewsByAccountId(
-    @Args('accountId', { type: () => Int }) accountId: number,
-  ) {
+  @Query(() => [Review], { name: 'findAllNeedToFeedbackReviews' })
+  async findAllNeedToFeedbackReviews(@CurrentUser() user: CurrentUserDTO) {
     console.log('\x1b[32m', '\n--------------Debug----------------\n');
-    console.log('\x1b[36m', `accountId = `, accountId);
+    console.log('\x1b[36m', `findAllNeedToFeedbackReviews = `, user.sub);
     console.log('\x1b[32m', '\n-----------------------------------', '\x1b[0m');
-    return await this.feedbackService.findAllRequireFeedbackReviews(accountId);
+    return await this.feedbackService.findAllRequireFeedbackReviews(user.sub);
   }
 }

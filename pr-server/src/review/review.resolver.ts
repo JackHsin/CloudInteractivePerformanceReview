@@ -31,12 +31,12 @@ export class ReviewResolver {
     return this.reviewService.assignEmployeesToReview(assignReviewInput);
   }
 
-  @Query(() => [Review], { name: 'review' })
+  @Query(() => [Review], { name: 'findAllReviews' })
   findAll() {
     return this.reviewService.findAll();
   }
 
-  @Query(() => Review, { name: 'review' })
+  @Query(() => Review, { name: 'findOneReviewById' })
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.reviewService.findOne(id);
   }

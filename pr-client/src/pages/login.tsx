@@ -1,3 +1,4 @@
+import router from "next/router";
 import { stringify } from "querystring";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -18,19 +19,6 @@ const Login = () => {
           password: string;
         })
       );
-      // const res = await axios.post("/auth/login", {
-      //   username,
-      //   password,
-      // });
-
-      // const accessToken = res.data.accessToken;
-      // console.log("\x1b[32m", "\n--------------Debug----------------\n");
-      // console.log("\x1b[36m", `token = `, res.data.accessToken);
-      // console.log(
-      //   "\x1b[32m",
-      //   "\n-----------------------------------",
-      //   "\x1b[0m"
-      // );
     }
   };
 

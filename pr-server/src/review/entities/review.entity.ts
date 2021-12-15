@@ -27,6 +27,6 @@ export class ReviewEntity extends BaseEntity {
   @Column({ name: 'expired_at', nullable: true, type: 'datetime' })
   expiredAt?: Date;
 
-  @OneToMany(() => FeedbackEntity, (feedbacks) => feedbacks.reviewId)
+  @OneToMany(() => FeedbackEntity, (feedbacks) => feedbacks.review)
   feedbacks?: FeedbackEntity[];
 }

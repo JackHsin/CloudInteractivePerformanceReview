@@ -46,13 +46,6 @@ const userSlice = createSlice({
   },
   reducers: {
     updateUserInfo: (state, data) => {
-      console.log("\x1b[32m", "\n--------------Debug----------------\n");
-      console.log("\x1b[36m", `redux data = `, data);
-      console.log(
-        "\x1b[32m",
-        "\n-----------------------------------",
-        "\x1b[0m"
-      );
       state.info = data.payload;
       state.isLoggedIn = true;
     },

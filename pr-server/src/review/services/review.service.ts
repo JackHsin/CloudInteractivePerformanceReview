@@ -48,7 +48,7 @@ export class ReviewService {
   }
 
   async findAll() {
-    return await this.reviewRepository.find();
+    return await this.reviewRepository.find({ relations: ['feedbacks'] });
   }
 
   async findOne(id: number) {
