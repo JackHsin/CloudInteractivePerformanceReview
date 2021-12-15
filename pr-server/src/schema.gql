@@ -57,10 +57,10 @@ type Mutation {
 }
 
 type Query {
-  accountAll: [Account!]!
-  accountById(id: Int!): Account!
-  accountByUsername(username: String!): Account!
+  findAll: [Account!]!
   findAllReviewsByAccountId(accountId: Int!): [Review!]!
+  findOne: Account!
+  findOneByUsername(username: String!): Account!
   review(id: Int!): Review!
 }
 

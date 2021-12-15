@@ -1,72 +1,52 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-
+import axios from "../apis/adapter";
 import { RootState } from "./index";
-import { Itokens } from "../interfaces/shop";
-import * as LOGIN_TYPE from "../constants/login";
 
-// import { v1AuthApi } from "../apis/adapter";
+export const loginAndSaveToken = createAsyncThunk(
+  "login/loginAndSaveToken",
+  async (payload: { username: string; password: string }) => {
+    const { username, password } = payload;
 
-// export const setTokensBy3rdPartyCode = createAsyncThunk(
-//   "login/setTokensBy3rdPartyCode",
-//   async (payload: { state: string; code: string }) => {
-//     let tokens: Itokens = null;
-//     let res: AxiosResponse<>;
-//     const { state, code } = payload;
+    const res = (await axios.post("/auth/login", {
+      username,
+      password,
+    })) as AxiosResponse;
 
-//     res = await v1AuthApi.webLoginByFacebook({ code });
-//     tokens = res.data;
+    console.log("\x1b[32m", "\n--------------Debug----------------\n");
+    console.log("\x1b[36m", `res = `, res);
+    console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
 
-//     return tokens;
-//   }
-// );
+    const { accessToken } = res.data;
 
-// export const signOutAndRemoveToken = createAsyncThunk(
-//   "login/signOutAndRemoveToken",
-//   async (_, { getState }) => {
-//     const states = getState() as RootState;
-//     await v1AuthApi.webLogout({
-//       token: states.login.tokens.accessToken,
-//       refreshToken: states.login.tokens.refreshToken,
-//     });
-//   }
-// );
-
-const initTokens = {
-  accessToken: null,
-  refreshToken: null,
-};
+    return { accessToken };
+  }
+);
 
 const loginSlice = createSlice({
   name: "login",
   initialState: {
-    tokens: initTokens,
+    accessToken: "",
   },
   reducers: {
     updateAccessToken(state, action) {
-      state.tokens.accessToken = action.payload;
+      state.accessToken = action.payload;
     },
-    updateRefreshToken(state, action) {
-      state.tokens.refreshToken = action.payload;
-    },
+
     clearTokens(state) {
-      state.tokens = initTokens;
+      state.accessToken = "";
     },
   },
-  // extraReducers: (builder) => {
-  //   builder.addCase(setTokensBy3rdPartyCode.fulfilled, (state, action) => {
-  //     if (action.payload) {
-  //       state.tokens.accessToken = action.payload.accessToken;
-  //       state.tokens.refreshToken = action.payload.refreshToken;
-  //     }
-  //   });
-  //   builder.addCase(signOutAndRemoveToken.fulfilled, (state) => {
-  //     state.tokens = initTokens;
-  //   });
-  // },
+  extraReducers: (builder) => {
+    builder.addCase(loginAndSaveToken.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.accessToken = action.payload.accessToken;
+      }
+    });
+  },
 });
 
 export const loginReducer = loginSlice.reducer;
-export const tokens = (state: RootState) => state.login.tokens;
+export const accessToken = (state: RootState) => state.login.accessToken;
 
-export const { updateAccessToken, updateRefreshToken } = loginSlice.actions;
+export const { updateAccessToken, clearTokens } = loginSlice.actions;

@@ -17,6 +17,7 @@ import storage from "redux-persist/lib/storage";
 
 import { loginReducer } from "./login";
 import { errorReducer } from "./error";
+import { userReducer } from "./user";
 
 const persistConfig = {
   key: "root",
@@ -27,6 +28,7 @@ const persistedReducer = persistReducer(persistConfig, loginReducer);
 
 const rootReducer = combineReducers({
   login: persistedReducer,
+  user: userReducer,
   error: errorReducer,
 });
 

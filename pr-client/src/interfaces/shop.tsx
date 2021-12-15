@@ -1,1 +1,1 @@
-export type Itokens = { accessToken: string; refreshToken: string };
+export type Itokens = { accessToken: string };

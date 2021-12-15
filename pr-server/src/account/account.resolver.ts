@@ -8,6 +8,8 @@ import { GqlJwtAuthGuard } from '../auth/jwt/graphql-jwt-auth.guard';
 import { RoleTypeEnum } from './enum/account.enum';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from './guard/roles.guard';
+import { CurrentUser } from 'src/common/decorators/graphql-current-user.decorator';
+import { CurrentUserDTO } from '../common/dto/current-user-decorator.dto';
 
 @UseGuards(RolesGuard)
 @UseGuards(GqlJwtAuthGuard)
@@ -23,17 +25,22 @@ export class AccountResolver {
     return await this.accountService.create(createAccountInput);
   }
 
-  @Query(() => [Account], { name: 'accountAll' })
+  @Query(() => [Account], { name: 'findAll' })
   async findAll() {
     return await this.accountService.findAll();
   }
 
-  @Query(() => Account, { name: 'accountById' })
-  async findOneById(@Args('id', { type: () => Int }) id: number) {
-    return await this.accountService.findOneById(id);
+  @Roles(RoleTypeEnum.EMPLOYEE)
+  @Query(() => Account, { name: 'findOne' })
+  async findOne(@CurrentUser() user: CurrentUserDTO) {
+    console.log('\x1b[32m', '\n--------------Debug----------------\n');
+    console.log('\x1b[36m', `user = `, user);
+    console.log('\x1b[32m', '\n-----------------------------------', '\x1b[0m');
+
+    return await this.accountService.findOneById(user.sub);
   }
 
-  @Query(() => Account, { name: 'accountByUsername' })
+  @Query(() => Account, { name: 'findOneByUsername' })
   async findOneByUsername(@Args('username') username: string) {
     return await this.accountService.findOneByUsername(username);
   }

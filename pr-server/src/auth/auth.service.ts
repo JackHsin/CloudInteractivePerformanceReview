@@ -30,7 +30,7 @@ export class AuthService implements OnModuleInit {
 
   async login(account: any) {
     const payload = {
-      username: account.username,
+      // username: account.username,
       sub: account.id,
       role: account.role,
     };

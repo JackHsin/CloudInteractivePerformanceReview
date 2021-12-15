@@ -22,7 +22,7 @@ const errorSlice = createSlice({
     setMessage: (state, action: PayloadAction<errorMessagePayload>) => {
       state.show = true;
       state.message = action.payload.message;
-      state.errorCode = action.payload.errorCode;
+      state.errorCode = action.payload.errorCode as string;
     },
     removeMessage: (state) => {
       state.show = false;

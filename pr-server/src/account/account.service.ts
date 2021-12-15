@@ -20,6 +20,9 @@ export class AccountService {
   }
 
   async findOneById(id: number) {
+    if (!id) {
+      throw new Error('Invalid ID');
+    }
     return await this.accountRepository.findOne(id);
   }
 
