@@ -20,15 +20,13 @@ const Navigator = () => {
         Home
       </button>
       {state.user.info.role === "ADMIN" && (
-        <>
-          <button
-            onClick={() => {
-              router.push("/account");
-            }}
-          >
-            account
-          </button>
-        </>
+        <button
+          onClick={() => {
+            router.push("/account");
+          }}
+        >
+          Account
+        </button>
       )}
 
       <button

@@ -22,17 +22,11 @@ export class FeedbackResolver {
   async submit(
     @Args('submitFeedbackInput') submitFeedbackInput: SubmitFeedbackInput,
   ) {
-    console.log('\x1b[32m', '\n--------------Debug----------------\n');
-    console.log('\x1b[36m', `submitFeedbackInput = `, submitFeedbackInput);
-    console.log('\x1b[32m', '\n-----------------------------------', '\x1b[0m');
     return await this.feedbackService.submitFeedback(submitFeedbackInput);
   }
 
   @Query(() => [Review], { name: 'findAllNeedToFeedbackReviews' })
   async findAllNeedToFeedbackReviews(@CurrentUser() user: CurrentUserDTO) {
-    console.log('\x1b[32m', '\n--------------Debug----------------\n');
-    console.log('\x1b[36m', `findAllNeedToFeedbackReviews = `, user.sub);
-    console.log('\x1b[32m', '\n-----------------------------------', '\x1b[0m');
     return await this.feedbackService.findAllRequireFeedbackReviews(user.sub);
   }
 }

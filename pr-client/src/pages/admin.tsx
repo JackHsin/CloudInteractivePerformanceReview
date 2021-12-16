@@ -24,7 +24,7 @@ const Admin: NextPage = () => {
 
   const [reviewee, setReviewee] = useState<{ id: number; username: string }>({
     id: 0,
-    username: "string",
+    username: "",
   });
   const [reviewers, setReviewers] = useState<number[]>([]);
 
@@ -43,6 +43,8 @@ const Admin: NextPage = () => {
     const findAllAccountsAsync = async () => {
       const data = await findAllAccounts();
       setAccounts(data);
+
+      setReviewee({ id: data[0].id, username: data[0].username });
     };
 
     findAllAccountsAsync();
@@ -123,11 +125,11 @@ const Admin: NextPage = () => {
     return <div>{checkboxes}</div>;
   };
 
-  const addReview = () => {
+  const addReview = async () => {
     if (!reviewee || !reviewee.username || !reviewee.id) {
       return;
     }
-    createReview(
+    const data = await createReview(
       reviewee.username,
       reviewee.id,
       newReviewName,
@@ -135,8 +137,14 @@ const Admin: NextPage = () => {
       reviewers
     );
 
-    // Hack: reload now, need to reload just the Reviews List and clear AddReview
-    router.reload();
+    console.log("\x1b[32m", "\n--------------Debug----------------\n");
+    console.log("\x1b[36m", `data = `, data);
+    console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
+
+    setReviews((old) => [
+      ...old,
+      { id: data.id, name: data.name, description: data.description },
+    ]);
   };
 
   return (
@@ -154,7 +162,14 @@ const Admin: NextPage = () => {
           </h1>
 
           <h1>Reviews</h1>
-          <div className={styles.grid}>{reviewContents}</div>
+          <div className={styles.grid}>
+            {reviews.map((review) => (
+              <div className={styles.card} key={review.id}>
+                <h2>Name: {review.name}</h2>
+                <p>Description: {review.description}</p>
+              </div>
+            ))}
+          </div>
 
           <h1>Add Review</h1>
           <div className={styles.grid}>

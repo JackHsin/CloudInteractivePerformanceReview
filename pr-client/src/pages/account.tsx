@@ -23,12 +23,12 @@ const Admin: NextPage = () => {
 
   const [reloadAccount, setReloadAccount] = useState(false);
 
-  const findAllAccountsAsync = async () => {
-    const data = await findAllAccounts();
-    setAccounts(data);
-  };
-
   useEffect(() => {
+    const findAllAccountsAsync = async () => {
+      const data = await findAllAccounts();
+      setAccounts(data);
+    };
+
     findAllAccountsAsync();
   }, []);
 

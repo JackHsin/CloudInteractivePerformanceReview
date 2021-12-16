@@ -43,6 +43,7 @@ export const getAndSetAccountInfo = async () => {
         }
       }
     `,
+    fetchPolicy: "no-cache",
   });
 
   store.dispatch(updateUserInfo(data.findOne));
@@ -65,8 +66,8 @@ export const findAllReviews = async () => {
         }
       }
     `,
+    fetchPolicy: "no-cache",
   });
-
   return data.findAllReviews;
 };
 
@@ -81,6 +82,7 @@ export const findAllAccounts = async () => {
         }
       }
     `,
+    fetchPolicy: "no-cache",
   });
   return data.findAll;
 };
@@ -97,6 +99,7 @@ export const findAllNeedToFeedbackReviews = async () => {
         }
       }
     `,
+    fetchPolicy: "no-cache",
   });
   return data.findAllNeedToFeedbackReviews;
 };
@@ -162,6 +165,8 @@ export const createReview = async (
       reviewerAccountIds,
     },
   });
+
+  return data.createReview;
 };
 
 export const createAccount = async (
