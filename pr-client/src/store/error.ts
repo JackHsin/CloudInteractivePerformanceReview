@@ -1,9 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-/**
- * error 處理，之後要實作細節
- */
-
 interface errorMessagePayload {
   message: string;
   errorCode?: string;

@@ -13,10 +13,6 @@ export const loginAndSaveToken = createAsyncThunk(
       password,
     })) as AxiosResponse;
 
-    console.log("\x1b[32m", "\n--------------Debug----------------\n");
-    console.log("\x1b[36m", `res = `, res);
-    console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
-
     const { accessToken } = res.data;
 
     return { accessToken };

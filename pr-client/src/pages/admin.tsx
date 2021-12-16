@@ -1,26 +1,35 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
-
-import { findAllReviews, getAndSetAccountInfo } from "../graphql/apollo-client";
-import { useDispatch, useSelector } from "react-redux";
-import { accessToken, clearTokens } from "../store/login";
-import { clearUserInfo } from "../store/user";
+import {
+  createReview,
+  findAllAccounts,
+  findAllReviews,
+} from "../graphql/apollo-client";
+import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import Layout from "../components/layout/layout";
+import { AnyObject } from "immer/dist/internal";
+import { useRouter } from "next/router";
 
 const Admin: NextPage = () => {
   const reviewContents = [];
-
-  const dispatch = useDispatch();
-
-  const token = useSelector(accessToken);
+  const router = useRouter();
 
   const state = useSelector((state: RootState) => state);
 
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<AnyObject[]>([]);
+  const [accounts, setAccounts] = useState<AnyObject[]>([]);
+
+  const [reviewee, setReviewee] = useState<{ id: number; username: string }>({
+    id: 0,
+    username: "string",
+  });
+  const [reviewers, setReviewers] = useState<number[]>([]);
+
+  const [newReviewName, setNewReviewName] = useState("");
+  const [newReviewDes, setNewReviewDes] = useState("");
 
   useEffect(() => {
     const findAllReviewsAsync = async () => {
@@ -30,16 +39,105 @@ const Admin: NextPage = () => {
     findAllReviewsAsync();
   }, []);
 
+  useEffect(() => {
+    const findAllAccountsAsync = async () => {
+      const data = await findAllAccounts();
+      setAccounts(data);
+    };
+
+    findAllAccountsAsync();
+  }, []);
+
   for (let i = 0; i < reviews.length; i++) {
     const review = reviews[i];
     reviewContents.push(
-      <div>
-        <h5>{review.name}</h5>
-        <p>{review.description}</p>
-        <time>{review.expiredAt}</time>
+      <div className={styles.card} key={review.id}>
+        <h2>Name: {review.name}</h2>
+        <p>Description: {review.description}</p>
       </div>
     );
   }
+
+  const revieweeSelector = () => {
+    const options = [];
+    for (let i = 0; i < accounts.length; i++) {
+      const account = accounts[i];
+      if (account.username !== "admin")
+        options.push(
+          <option key={account.id} value={account.id}>
+            {account.username}
+          </option>
+        );
+    }
+
+    return (
+      <div>
+        <select
+          onChange={(e) => {
+            const index = e.target.selectedIndex;
+            const accountId = e.target.value;
+            const accountName = e.target.options[index].text;
+            setReviewee({
+              id: Number(accountId),
+              username: accountName,
+            });
+          }}
+        >
+          {options}
+        </select>
+      </div>
+    );
+  };
+
+  const updateReviewerArray = (e: any) => {
+    const checked = e.target.checked;
+    const accountId = e.target.value;
+
+    if (checked) {
+      setReviewers((old) => [...old, Number(e.target.value)]);
+    } else {
+      const newReviewers = reviewers.filter(
+        (reviewer) => reviewer !== accountId
+      );
+      setReviewers(newReviewers);
+    }
+  };
+
+  const reviewerCheckboxes = () => {
+    const checkboxes = [];
+    for (let i = 0; i < accounts.length; i++) {
+      const account = accounts[i];
+      if (account.username !== "admin")
+        checkboxes.push(
+          <label key={account.id}>
+            <input
+              type="checkbox"
+              value={account.id}
+              onChange={updateReviewerArray}
+            ></input>
+            {account.username}
+          </label>
+        );
+    }
+
+    return <div>{checkboxes}</div>;
+  };
+
+  const addReview = () => {
+    if (!reviewee || !reviewee.username || !reviewee.id) {
+      return;
+    }
+    createReview(
+      reviewee.username,
+      reviewee.id,
+      newReviewName,
+      newReviewDes,
+      reviewers
+    );
+
+    // Hack: reload now, need to reload just the Reviews List and clear AddReview
+    router.reload();
+  };
 
   return (
     <Layout>
@@ -55,36 +153,22 @@ const Admin: NextPage = () => {
             Welcome {state.user.info.username} to Admin
           </h1>
 
-          <div>{reviewContents}</div>
+          <h1>Reviews</h1>
+          <div className={styles.grid}>{reviewContents}</div>
 
+          <h1>Add Review</h1>
           <div className={styles.grid}>
-            <a href="https://nextjs.org/docs" className={styles.card}>
-              <h2>Documentation &rarr;</h2>
-              <p>Find in-depth information about Next.js features and API.</p>
-            </a>
-
-            <a href="https://nextjs.org/learn" className={styles.card}>
-              <h2>Learn &rarr;</h2>
-              <p>Learn about Next.js in an interactive course with quizzes!</p>
-            </a>
-
-            <a
-              href="https://github.com/vercel/next.js/tree/master/examples"
-              className={styles.card}
-            >
-              <h2>Examples &rarr;</h2>
-              <p>Discover and deploy boilerplate example Next.js projects.</p>
-            </a>
-
-            <a
-              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              className={styles.card}
-            >
-              <h2>Deploy &rarr;</h2>
-              <p>
-                Instantly deploy your Next.js site to a public URL with Vercel.
-              </p>
-            </a>
+            <div className={styles.card}>
+              <p>Reviewee</p>
+              {revieweeSelector()}
+              <p>Name:</p>
+              <input onChange={(e) => setNewReviewName(e.target.value)}></input>
+              <p>Description:</p>
+              <input onChange={(e) => setNewReviewDes(e.target.value)}></input>
+              <p>Reviewer</p>
+              {reviewerCheckboxes()}
+              <button onClick={addReview}>Submit</button>
+            </div>
           </div>
         </main>
       </div>

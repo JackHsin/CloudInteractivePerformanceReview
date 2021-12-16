@@ -22,6 +22,9 @@ export class FeedbackResolver {
   async submit(
     @Args('submitFeedbackInput') submitFeedbackInput: SubmitFeedbackInput,
   ) {
+    console.log('\x1b[32m', '\n--------------Debug----------------\n');
+    console.log('\x1b[36m', `submitFeedbackInput = `, submitFeedbackInput);
+    console.log('\x1b[32m', '\n-----------------------------------', '\x1b[0m');
     return await this.feedbackService.submitFeedback(submitFeedbackInput);
   }
 

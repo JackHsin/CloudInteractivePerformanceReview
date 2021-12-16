@@ -1,22 +1,38 @@
-import { ApolloClient, gql, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  createHttpLink,
+  gql,
+  InMemoryCache,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 import store from "../store";
 import { updateUserInfo } from "../store/user";
 
-// TODO: Make it singleton or hooks, so it will be recreated only when token changed
-const createClient = () => {
-  const data = store.getState();
-  return new ApolloClient({
-    uri: `${process.env.NEXT_PUBLIC_API_GATEWAY_BASE_PATH}/graphql`,
+const httpLink = createHttpLink({
+  uri: `${process.env.NEXT_PUBLIC_API_GATEWAY_BASE_PATH}/graphql`,
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const accessToken = store.getState().login.accessToken;
+
+  // return the headers to the context so httpLink can read them
+  return {
     headers: {
-      Authorization: `Bearer ${data.login.accessToken}`,
-      // Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      ...headers,
+      authorization: accessToken ? `Bearer ${accessToken}` : "",
     },
-    cache: new InMemoryCache({ resultCaching: false }),
-  });
-};
+  };
+});
+
+// TODO: Need To Figure out Apollo Cache
+// Issue: Refetching the data will get cached data when user updated the data
+export const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+});
 
 export const getAndSetAccountInfo = async () => {
-  const client = createClient();
   const { data } = await client.query({
     query: gql`
       {
@@ -33,7 +49,6 @@ export const getAndSetAccountInfo = async () => {
 };
 
 export const findAllReviews = async () => {
-  const client = createClient();
   const { data } = await client.query({
     query: gql`
       {
@@ -51,14 +66,26 @@ export const findAllReviews = async () => {
       }
     `,
   });
-  console.log("\x1b[32m", "\n--------------Debug----------------\n");
-  console.log("\x1b[36m", `data = `, data.findAllReviews);
-  console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
+
   return data.findAllReviews;
 };
 
+export const findAllAccounts = async () => {
+  const { data } = await client.query({
+    query: gql`
+      {
+        findAll {
+          id
+          role
+          username
+        }
+      }
+    `,
+  });
+  return data.findAll;
+};
+
 export const findAllNeedToFeedbackReviews = async () => {
-  const client = createClient();
   const { data } = await client.query({
     query: gql`
       {
@@ -71,9 +98,6 @@ export const findAllNeedToFeedbackReviews = async () => {
       }
     `,
   });
-  console.log("\x1b[32m", "\n--------------Debug----------------\n");
-  console.log("\x1b[36m", `data = `, data.findAllNeedToFeedbackReviews);
-  console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
   return data.findAllNeedToFeedbackReviews;
 };
 
@@ -82,15 +106,14 @@ export const submitFeedback = async (
   reviewId: number,
   feedback: string
 ) => {
-  const client = createClient();
   const { data } = await client.mutate({
     mutation: gql`
-      mutation {
+      mutation Submit($reviewerId: Int!, $reviewId: Int!, $feedback: String!) {
         submit(
           submitFeedbackInput: {
-            reviewerAccountId: ${reviewerId}
-            reviewId: ${reviewId}
-            feedback: ${feedback}
+            reviewerAccountId: $reviewerId
+            reviewId: $reviewId
+            feedback: $feedback
           }
         ) {
           reviewId
@@ -98,9 +121,94 @@ export const submitFeedback = async (
         }
       }
     `,
+    variables: { reviewerId, reviewId, feedback },
   });
-  console.log("\x1b[32m", "\n--------------Debug----------------\n");
-  console.log("\x1b[36m", `data = `, data.submitFeedbackInput);
-  console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
-  return data.submitFeedbackInput;
+};
+
+export const createReview = async (
+  revieweeName: string,
+  revieweeId: number,
+  reviewName: string,
+  description: string = "Please submit your feedback",
+  reviewerAccountIds: number[]
+) => {
+  const { data } = await client.mutate({
+    mutation: gql`
+      mutation CreateReview(
+        $revieweeId: Int!
+        $reviewName: String!
+        $description: String!
+        $reviewerAccountIds: [Int!]!
+      ) {
+        createReview(
+          createReviewInput: {
+            subjectAccountId: $revieweeId
+            name: $reviewName
+            description: $description
+            reviewerAccountIds: $reviewerAccountIds
+          }
+        ) {
+          id
+          name
+          description
+          status
+        }
+      }
+    `,
+    variables: {
+      revieweeId,
+      reviewName: `${revieweeName} ${reviewName}`,
+      description,
+      reviewerAccountIds,
+    },
+  });
+};
+
+export const createAccount = async (
+  username: string,
+  password: string,
+  role = "EMPLOYEE"
+) => {
+  const { data } = await client.mutate({
+    mutation: gql`
+      mutation CreateReview(
+        $username: String!
+        $password: String!
+        $role: String!
+      ) {
+        createAccount(
+          createAccountInput: {
+            username: $username
+            password: $password
+            role: $role
+          }
+        ) {
+          id
+          username
+          role
+        }
+      }
+    `,
+    variables: {
+      username,
+      password,
+      role,
+    },
+  });
+  return data.createAccount;
+};
+
+export const removeAccount = async (accountId: number) => {
+  const { data } = await client.mutate({
+    mutation: gql`
+      mutation removeAccount($accountId: Int!) {
+        removeAccount(id: $accountId) {
+          id
+        }
+      }
+    `,
+    variables: {
+      accountId,
+    },
+  });
 };

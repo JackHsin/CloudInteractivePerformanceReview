@@ -1,6 +1,5 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -24,20 +23,10 @@ const Home: NextPage = () => {
         </Head>
 
         <main className={styles.main}>
-          <h1 className={styles.title}>
-            Welcome {state.user.info.username} to Performance Review Panel
+          <h1 className={styles.title}>Performance Review Dashboard</h1>
+          <h1 className={styles.title} style={{ color: "pink" }}>
+            Welcome {state.user.info.username}
           </h1>
-          <button
-            onClick={() => {
-              if (state.user.info.role === "ADMIN") {
-                router.push("/admin");
-              } else {
-                router.push("/reviewer");
-              }
-            }}
-          >
-            Go
-          </button>
         </main>
       </div>
     </Layout>
