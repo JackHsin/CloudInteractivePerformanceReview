@@ -14,6 +14,7 @@ import { accessToken, clearTokens } from "../store/login";
 import { clearUserInfo } from "../store/user";
 import { RootState } from "../store";
 import Layout from "../components/layout/layout";
+import FeedbackCard from "../components/feedbackCard/feedbackCard";
 
 const Reviwer: NextPage = () => {
   const reviewContents = [];
@@ -36,11 +37,26 @@ const Reviwer: NextPage = () => {
 
   for (let i = 0; i < reviews.length; i++) {
     const review = reviews[i];
+    console.log("\x1b[32m", "\n--------------Debug----------------\n");
+    console.log("\x1b[36m", `review = `, review);
+    console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
     reviewContents.push(
-      <div>
-        <h5>{review.name}</h5>
-        <p>{review.description}</p>
-      </div>
+      <FeedbackCard reviewerId={state.user.info.id} review={review} />
+      // <div>
+      //   <h5>{review.name}</h5>
+      //   <p>{review.description}</p>
+      // </div>
+
+      // <div className={styles.grid}>
+      //   <div className={styles.card}>
+      //     <h2>Name: {review.name}</h2>
+      //     <p>Description {review.description}</p>
+      //     <div>
+      //       <textarea></textarea>
+      //     </div>
+      //     <button onClick={}>Submit</button>
+      //   </div>
+      // </div>
     );
   }
 
@@ -54,60 +70,10 @@ const Reviwer: NextPage = () => {
         </Head>
 
         <main className={styles.main}>
-          <h1 className={styles.title}>
-            Welcome {state.user.info.username} to Admin
-          </h1>
+          <h1 className={styles.title}>Welcome {state.user.info.username}</h1>
 
-          <div>{reviewContents}</div>
-
-          <div className={styles.grid}>
-            <a href="https://nextjs.org/docs" className={styles.card}>
-              <h2>Documentation &rarr;</h2>
-              <p>Find in-depth information about Next.js features and API.</p>
-            </a>
-
-            <a href="https://nextjs.org/learn" className={styles.card}>
-              <h2>Learn &rarr;</h2>
-              <p>Learn about Next.js in an interactive course with quizzes!</p>
-            </a>
-
-            <a
-              href="https://github.com/vercel/next.js/tree/master/examples"
-              className={styles.card}
-            >
-              <h2>Examples &rarr;</h2>
-              <p>Discover and deploy boilerplate example Next.js projects.</p>
-            </a>
-
-            <a
-              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              className={styles.card}
-            >
-              <h2>Deploy &rarr;</h2>
-              <p>
-                Instantly deploy your Next.js site to a public URL with Vercel.
-              </p>
-            </a>
-          </div>
+          {reviewContents}
         </main>
-
-        <footer className={styles.footer}>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Powered by{" "}
-            <span className={styles.logo}>
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                width={72}
-                height={16}
-              />
-            </span>
-          </a>
-        </footer>
       </div>
     </Layout>
   );

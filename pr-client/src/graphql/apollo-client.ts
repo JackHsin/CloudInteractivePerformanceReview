@@ -76,3 +76,31 @@ export const findAllNeedToFeedbackReviews = async () => {
   console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
   return data.findAllNeedToFeedbackReviews;
 };
+
+export const submitFeedback = async (
+  reviewerId: number,
+  reviewId: number,
+  feedback: string
+) => {
+  const client = createClient();
+  const { data } = await client.mutate({
+    mutation: gql`
+      mutation {
+        submit(
+          submitFeedbackInput: {
+            reviewerAccountId: ${reviewerId}
+            reviewId: ${reviewId}
+            feedback: ${feedback}
+          }
+        ) {
+          reviewId
+          feedback
+        }
+      }
+    `,
+  });
+  console.log("\x1b[32m", "\n--------------Debug----------------\n");
+  console.log("\x1b[36m", `data = `, data.submitFeedbackInput);
+  console.log("\x1b[32m", "\n-----------------------------------", "\x1b[0m");
+  return data.submitFeedbackInput;
+};

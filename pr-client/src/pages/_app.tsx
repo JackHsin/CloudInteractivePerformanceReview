@@ -4,7 +4,7 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import { Provider } from "react-redux";
 import store from "../store";
-import RouteGuard from "../components/route-guard/routeGurad";
+import RouteGuard from "../components/routeGuard/routeGurad";
 import WithErrorHandler from "../components/withErrorHandler/withErrorHandler";
 
 import "../styles/globals.css";
