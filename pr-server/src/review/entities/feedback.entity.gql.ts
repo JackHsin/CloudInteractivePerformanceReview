@@ -8,6 +8,6 @@ export class Feedback {
   @Field(() => Int)
   reviewerAccountId: number;
 
-  @Field()
+  @Field({ nullable: true })
   feedback: string;
 }

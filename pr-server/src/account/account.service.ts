@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { In } from 'typeorm';
 import { CreateAccountInput } from './dto/create-account.input';
 import { UpdateAccountInput } from './dto/update-account.input';
 import { AccountRepository } from './repositories/account.repository';
@@ -13,6 +14,10 @@ export class AccountService {
 
   async findAll() {
     return await this.accountRepository.find();
+  }
+
+  async findByIds(ids: number[]) {
+    return await this.accountRepository.find({ id: In(ids) });
   }
 
   async findOneByUsername(username: string) {

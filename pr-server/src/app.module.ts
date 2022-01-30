@@ -8,6 +8,8 @@ import { AccountEntity } from './account/entities/account.entity';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
+import { AccountService } from './account/account.service';
+import { reviewAccountsLoader } from './review/dataLoader/accounts.loader';
 
 const {
   MYSQL_DB_HOST,
@@ -33,13 +35,22 @@ const {
       entities: [AccountEntity],
       logging: 'all',
     }),
-    GraphQLModule.forRoot({
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
-      cors: {
-        origin: 'http://localhost:3001',
-        credentials: true,
-      },
+    GraphQLModule.forRootAsync({
+      imports: [AccountModule],
+      useFactory: (accountService: AccountService) => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        sortSchema: true,
+        cors: {
+          origin: 'http://localhost:3001',
+          credentials: true,
+        },
+        context: () => ({
+          // randomValue: Math.random(),
+          // Ref: https://dev.to/filipegeric/using-graphql-dataloaders-with-nestjs-2jo1
+          accountsLoader: reviewAccountsLoader(accountService),
+        }),
+      }),
+      inject: [AccountService],
     }),
     AuthModule,
   ],

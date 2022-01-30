@@ -51,6 +51,10 @@ export class ReviewService {
     return await this.reviewRepository.find({ relations: ['feedbacks'] });
   }
 
+  async findAll_testRealGraphql() {
+    return await this.reviewRepository.find();
+  }
+
   async findOne(id: number) {
     return await this.reviewRepository.findOne(id);
   }

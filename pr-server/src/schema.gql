@@ -40,7 +40,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Feedback {
-  feedback: String!
+  feedback: String
   reviewId: Int!
   reviewerAccountId: Int!
 }
@@ -60,15 +60,18 @@ type Query {
   findAll: [Account!]!
   findAllNeedToFeedbackReviews: [Review!]!
   findAllReviews: [Review!]!
+  findAllReviews_testRealGraphql: [Review!]!
+  findByIds(ids: [Float!]!): [Account!]!
   findOne: Account!
   findOneByUsername(username: String!): Account!
   findOneReviewById(id: Int!): Review!
 }
 
 type Review {
+  accounts: Account!
   description: String!
   expiredAt: DateTime
-  feedbacks: [Feedback!]!
+  feedbacks: [Feedback!]
   id: Int!
   name: String!
   status: String!

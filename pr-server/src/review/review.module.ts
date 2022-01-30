@@ -6,9 +6,13 @@ import { ReviewRepository } from './repositories/review.repository';
 import { FeedbackRepository } from './repositories/feedback.repository';
 import { FeedbackResolver } from './feedback.resolver';
 import { FeedbackService } from './services/feedback.service';
+import { AccountModule } from 'src/account/account.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ReviewRepository, FeedbackRepository])],
+  imports: [
+    TypeOrmModule.forFeature([ReviewRepository, FeedbackRepository]),
+    AccountModule,
+  ],
   providers: [ReviewResolver, ReviewService, FeedbackResolver, FeedbackService],
 })
 export class ReviewModule {}

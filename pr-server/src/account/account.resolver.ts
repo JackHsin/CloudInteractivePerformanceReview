@@ -30,6 +30,11 @@ export class AccountResolver {
     return await this.accountService.findAll();
   }
 
+  @Query(() => [Account], { name: 'findByIds' })
+  async findByIds(@Args({ name: 'ids', type: () => [Number] }) ids: number[]) {
+    return await this.accountService.findByIds(ids);
+  }
+
   @Roles(RoleTypeEnum.ADMIN, RoleTypeEnum.EMPLOYEE)
   @Query(() => Account, { name: 'findOne' })
   async findOne(@CurrentUser() user: CurrentUserDTO) {
