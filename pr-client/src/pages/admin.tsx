@@ -22,8 +22,11 @@ const Admin: NextPage = () => {
   const [reviews, setReviews] = useState<AnyObject[]>([]);
   const [accounts, setAccounts] = useState<AnyObject[]>([]);
 
-  const [reviewee, setReviewee] = useState<{ id: number; username: string }>({
-    id: 0,
+  const [reviewee, setReviewee] = useState<{
+    id: number | null;
+    username: string;
+  }>({
+    id: null,
     username: "",
   });
   const [reviewers, setReviewers] = useState<number[]>([]);
@@ -43,8 +46,8 @@ const Admin: NextPage = () => {
     const findAllAccountsAsync = async () => {
       const data = await findAllAccounts();
       setAccounts(data);
-
-      setReviewee({ id: data[0].id, username: data[0].username });
+      // index 0 is admin
+      setReviewee({ id: data[1].id, username: data[1].username });
     };
 
     findAllAccountsAsync();
